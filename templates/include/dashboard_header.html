@@ -27,7 +27,7 @@
       </a>
       <hr class="sidebar-divider my-0">
       <li class="nav-item active">
-        <a class="nav-link" href="">
+        <a class="nav-link" href="/">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>首页</span></a>
       </li>
@@ -35,7 +35,7 @@
       <div class="sidebar-heading">
       </div>
       <li class="nav-item">
-        <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseBootstrap"
+        <a class="nav-link" href="/" data-toggle="collapse" data-target="#collapseBootstrap"
           aria-expanded="true" aria-controls="collapseBootstrap">
           <i class="far fa-fw fa-window-maximize"></i>
           <span>控制台</span>
@@ -43,7 +43,7 @@
         <div id="collapseBootstrap" class="collapse show" aria-labelledby="headingBootstrap" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">控制台</h6>
-            <a class="collapse-item" href="">账户管理</a>
+            <a class="collapse-item" href="/accountManage">账户管理</a>
             <a class="collapse-item" href="">地址管理</a>
             <a class="collapse-item" href="">定时任务</a>
             <a class="collapse-item" href="">人物日志</a>
@@ -220,7 +220,7 @@
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
                 <img class="img-profile rounded-circle" src="static/img/boy.png" style="max-width: 60px">
-                <span class="ml-2 d-none d-lg-inline text-white small">NothAmor</span>
+                <span class="ml-2 d-none d-lg-inline text-white small">{{ username }}</span>
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                 <a class="dropdown-item" href="#">

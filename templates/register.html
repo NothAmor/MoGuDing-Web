@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <link href="static/img/logo/logo.png" rel="icon">
-  <title>注册 - 蘑菇丁自动云</title>
+  <title>{{ title }}</title>
   <link href="static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
   <link href="static/css/ruang-admin.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
 
 <body class="bg-gradient-login">
   <!-- Register Content -->
-  <div class="container-login" style="width: 700px;">
+  <div class="container-login">
     <div class="row justify-content-center" >
       <div class="col-xl-10 col-lg-12 col-md-9">
         <div class="card shadow-sm my-5">
@@ -29,6 +29,7 @@
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">注册</h1>
                   </div>
+                  <p style="color: red;">{{ alert }}</p>
                   <form action="/register" method="post">
                     <div class="form-group">
                       <label>用户名</label>

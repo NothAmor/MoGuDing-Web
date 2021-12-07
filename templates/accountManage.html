@@ -1,0 +1,145 @@
+{% include './include/dashboard_header.html' %}
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">账户管理</h1>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">首页</a></li>
+              <li class="breadcrumb-item active" aria-current="page">账户管理</li>
+            </ol>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12 mb-4">
+              <!-- Simple Tables -->
+              <div class="card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <!--<h6 class="m-0 font-weight-bold text-primary">Simple Tables</h6>-->
+                  <!--<button type="button" class="btn btn-success mb-1">添加账户</button>-->
+                  <a class="dropdown-item btn btn-success mb-1" href="javascript:void(0);" data-toggle="modal" data-target="#addAccount"
+                   style="width: 100px; padding-left: 20px; background-color: #35B56C; color: white; height: 35px;">
+                    添加账户
+                  </a>
+                  <p style="color: red; margin-left: 50px;">{{ alert }}</p>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                      <style>
+                        th, td {
+                          font-size: 14px;
+                          max-width: 100px;;
+                          text-align: center;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          white-space: nowrap;
+                          height: auto;
+                        }
+                      </style>
+                      <tr>
+                        <th>手机号</th>
+                        <th>密码</th>
+                        <th>token</th>
+                        <th>User-Agent</th>
+                        <th>备注</th>
+                        <th style="width: 150px;">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for account in accountQuery %}
+                      <tr>
+                        <td>{{ account.phoneNumber }}</td>
+                        <td>{{ account.password }}</td>
+                        <td id="click1">{{ account.token }}</td>
+                        <td id="click2">{{ account.userAgent }}</td>
+                        <td>{{ account.remark }}</td>
+                        <td><button type="button" class="btn btn-danger mb-1">删除账户</button></td>
+                      </tr>
+                      {% endfor %}
+                      <script>
+                        let open = false;
+                        document.getElementById("click1").onclick = function() {
+                          let element = document.getElementById("click1");
+                          if(open == false) {
+                            element.style.whiteSpace = "normal";
+                            element.style.textOverflow = "normal";
+                            open = true;
+                          } else {
+                            element.style.whiteSpace = "nowrap";
+                            element.style.textOverflow = "ellipsis";
+                            open = false;
+                          }
+                        }
+                        let j = false;
+                        document.getElementById("click2").onclick = function() {
+                          let element = document.getElementById("click2");
+                          if(j ==false) {
+                            element.style.whiteSpace = "normal";
+                            element.style.textOverflow = "normal";
+                            j = true;
+                          } else {
+                            element.style.whiteSpace = "nowrap";
+                            element.style.textOverflow = "ellipsis";
+                            j = false;
+                          }
+                        }
+                      </script>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="card-footer"></div>
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+
+        </div>
+        <!---Container Fluid-->
+      </div>
+
+      <!-- Modal addAccount -->
+      <div class="modal fade" id="addAccount" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabelLogout">添加蘑菇丁账户</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <form method="post" action='/accountManage'>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">手机号码</label>
+                  <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" aria-describedby="emailHelp" 
+                          placeholder="请输入手机号" required>
+                  <small id="phoneNumberHelp" class="form-text text-muted">请放心，我们绝不会将您的信息给任何一个人。</small>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">密码</label>
+                  <input type="text" class="form-control" id="password" name="password" placeholder="请输入蘑菇丁账户密码" required>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">Token</label>
+                  <input type="text" class="form-control" id="token" name="token" placeholder="请输入蘑菇丁账户Token（选填，可自动获取）">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">User-Agent</label>
+                  <input type="text" class="form-control" id="userAgent" name="userAgent" placeholder="请输入User-Agent（选填，可自动生成）">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">备注</label>
+                  <input type="text" class="form-control" id="remark" name="remark" placeholder="备注" required>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">取消</button>
+                  <button type="submit" class="btn btn-primary">添加账户</button>
+                </div>
+              </form>
+              </div>
+        </div>
+      </div>
+      </div>
+
+      {% include './include/dashboard_footer.html' %}

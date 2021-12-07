@@ -36,3 +36,19 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, index=True)
     password = db.Column(db.String(255))
     rmb = db.Column(db.Integer, default=50)
+
+"""
+    蘑菇丁账户表
+"""
+class mogudingAccount(db.Model):
+    # 表名
+    __tablename__ = 'mogudingAccount'
+
+    # 字段
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    owner = db.Column(db.String(255))
+    phoneNumber = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(255))
+    token = db.Column(db.String(255))
+    userAgent = db.Column(db.String(255))
+    remark = db.Column(db.String(255))
