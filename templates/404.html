@@ -1,0 +1,38 @@
+{% include './include/dashboard_header.html' %}
+
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          <div class="text-center">
+            <img src="static/img/error.svg" style="max-height: 100px;" class="mb-3">
+            <h3 class="text-gray-800 font-weight-bold">天啊!</h3>
+            <p class="lead text-gray-800 mx-auto">404 Page Not Found</p>
+            <a href="/">&larr; 页面不见了，带我去主页吧</a>
+          </div>
+
+          <!-- Modal Logout -->
+          <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabelLogout">不!!!</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p>你确定想要退出登录吗?</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">取消</button>
+                  <a href="/logout" class="btn btn-primary">我意已决</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!---Container Fluid-->
+      </div>
+      
+      {% include './include/dashboard_footer.html' %}
