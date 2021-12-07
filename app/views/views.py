@@ -1,10 +1,52 @@
 from flask import render_template, request, url_for, redirect, session
 from flask.wrappers import Request
 from config import flaskConfig
-from ..db.db import User, mogudingAccount, db
+from ..db.db import User, mogudingAccount, db, mogudingAddress
 
 import hashlib
 import random
+import requests
+import urllib3
+urllib3.disable_warnings()
+import json
+
+class API:
+    """
+        返回token值api
+    """
+    def returnToken(phoneNumber, password, userAgent):
+        url = "https://api.moguding.net:9000/session/user/v1/login"
+        flaskConfig.request_header.update(
+            {"user-agent": userAgent}
+        )
+
+        request_body = {
+            "phone": phoneNumber,
+            "password": password,
+            "loginType": "android",
+            "uuid": ""
+        }
+
+        response = requests.post(url=url, headers=flaskConfig.request_header, data=json.dumps(request_body), verify=False)
+        response = json.loads(response.text)
+        if response['code'] != 200:
+            return "error"
+        else:
+            return response['data']['token']
+
+    """
+        返回sign值api
+    """
+    def returnSign(userId):
+        salt = "3478cbbc33f84bd00d75d7dfa69e0daa"
+
+        # sign算法：userId + "student" + salt拼接后计算哈希值
+        string = userId + "student" + salt
+        md5 = hashlib.md5()
+        md5.update(bytes(string.encode()))
+        string = md5.hexdigest()
+
+        return string
 
 class viewFunctions:
 
@@ -121,9 +163,15 @@ class viewFunctions:
                 alert = "该蘑菇丁账户已经在平台内被绑定！如果你是此账户的实际持有者，请发邮件申诉！"
                 return render_template('accountManage.html', title="账户管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                         alert=alert)
+
             if phoneNumber != "" and password != "" and remark != "":
                 if userAgent == "":
                     userAgent = flaskConfig.userAgents[random.randint(0, len(flaskConfig.userAgents) - 1)]
+                
+                token = API.returnToken(phoneNumber=phoneNumber, password=password, userAgent=userAgent)
+                if token == "error":
+                    token = "获取token出错，请检查账户信息，并删除账户重新尝试!"
+
                 addMoGuDingAccount = mogudingAccount(owner=session['email'], phoneNumber=phoneNumber, password=password, token=token,
                                                      userAgent=userAgent, remark=remark)
                 db.session.add_all([addMoGuDingAccount])
@@ -131,12 +179,43 @@ class viewFunctions:
                 accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
                 return render_template('accountManage.html', title="账户管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                         alert=alert, accountQuery=accountQuery)
-            pass
         else:
             accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
             return render_template('accountManage.html', title="账户管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                     accountQuery=accountQuery)
     
+    """
+        地址管理
+    """
+    @flaskConfig.app.route('/addressManage', methods=['get', 'POST'])
+    def addressManage():
+        if request.method == 'POST':
+            account = request.form['account']
+            province = request.form['province']
+            city = request.form['city']
+            address = request.form['address']
+            longitude = request.form['longitude']
+            latitude = request.form['latitude']
+
+            # 添加地址数据
+            addMoGuDingAddress = mogudingAddress(owner=session['email'], account=account, province=province, city=city, detailedAddress=address, longitude=longitude, 
+                                                 latitude=latitude)
+            db.session.add_all([addMoGuDingAddress])
+            db.session.commit()
+
+            accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
+            for account in accountQuery:
+                updateAccountAddressStatus = mogudingAccount.query.filter_by(mogudingAccount.phoneNumber == account.phoneNumber)
+
+            addressQuery = mogudingAddress.query.filter_by(owner=session['email']).all()
+            return render_template('addressManage.html', title="地址管理 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                    addressQuery=addressQuery)
+        else:
+            accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
+            addressQuery = mogudingAddress.query.filter_by(owner=session['email']).all()
+            return render_template('addressManage.html', title="地址管理 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                    addressQuery=addressQuery, accountQuery=accountQuery)
+
     """
         404
     """

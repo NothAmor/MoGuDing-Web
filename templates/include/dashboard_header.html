@@ -7,12 +7,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <link href="static/img/logo/logo.png" rel="icon">
+  <link href="{{url}}static/img/logo/logo.png" rel="icon">
   <!--<title>控制台 - 蘑菇丁自动云</title> -->
   <title>{{ title }}</title>
-  <link href="static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-  <link href="static/css/ruang-admin.min.css" rel="stylesheet">
+  <link href="{{url}}static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="{{url}}static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="{{url}}static/css/ruang-admin.min.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -21,7 +21,7 @@
     <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
         <div class="sidebar-brand-icon">
-          <img src="static/img/logo/logo2.png">
+          <img src="{{url}}static/img/logo/logo2.png">
         </div>
         <div class="sidebar-brand-text mx-3">蘑菇丁自动云</div>
       </a>
@@ -44,7 +44,7 @@
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">控制台</h6>
             <a class="collapse-item" href="/accountManage">账户管理</a>
-            <a class="collapse-item" href="">地址管理</a>
+            <a class="collapse-item" href="/addressManage">地址管理</a>
             <a class="collapse-item" href="">定时任务</a>
             <a class="collapse-item" href="">人物日志</a>
             <a class="collapse-item" href="">推送管理</a>

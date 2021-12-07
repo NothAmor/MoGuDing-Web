@@ -49,6 +49,24 @@ class mogudingAccount(db.Model):
     owner = db.Column(db.String(255))
     phoneNumber = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
-    token = db.Column(db.String(255))
-    userAgent = db.Column(db.String(255))
+    token = db.Column(db.String(2555))
+    userAgent = db.Column(db.String(2555))
     remark = db.Column(db.String(255))
+    haveAddress = db.Column(db.Boolean)
+
+"""
+    蘑菇丁打卡地址表
+"""
+class mogudingAddress(db.Model):
+    # 表名
+    __tablename__ = 'mogudingAddress'
+
+    # 字段
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    owner = db.Column(db.String(255))
+    account = db.Column(db.String(255))
+    province = db.Column(db.String(255))
+    city = db.Column(db.String(255))
+    detailedAddress = db.Column(db.String(2555))
+    longitude = db.Column(db.String(255))
+    latitude = db.Column(db.String(255))

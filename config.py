@@ -4,6 +4,9 @@ class flaskConfig:
     # DEBUG模式
     DEBUG = True
 
+    # 网站URL
+    url = "http://127.0.0.1:5000/"
+
     # html模版路径
     template_folder = './templates'
 
@@ -30,3 +33,15 @@ class flaskConfig:
         "Mozilla/5.0 (Linux; Android 11; Redmi K30 Pro Build/RKQ1.200826.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/76.0.3809.89 Mobile Safari/537.36 T7/12.17 SP-engine/2.32.0 baiduboxapp/12.18.0.10 (Baidu; P1 11) NABar/1.0",
         "Mozilla/5.0 (Linux; Android 11; Redmi K30 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36 EdgA/45.09.4.5079"
     ]
+
+    request_header = {
+        "Host": "api.moguding.net:9000",
+        "accept-language": "zh-CN,zh;q=0.8",
+        "user-agent": "",
+        "sign": "",
+        "authorization": "",
+        "rolekey": "",
+        "content-type": "application/json; charset=UTF-8",
+        "accept-encoding": "gzip",
+        "cache-control": "no-cache"
+    }
