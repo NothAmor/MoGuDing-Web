@@ -306,6 +306,9 @@ class viewFunctions:
             db.session.add_all([addMoGuDingTask])
             db.session.commit()
 
+            from ..cron.cron import cronMethod
+            cronMethod.refreshJobs()
+
             accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
             tasksQuery = mogudingTasks.query.filter_by(owner=session['email']).all()
             return render_template('tasksManage.html', title="任务管理 - {}".format(flaskConfig.websiteName), username=session['username'],

@@ -76,6 +76,24 @@ class cronMethod:
             elif task.runRule == "everyMonth":
                 flaskConfig.scheduler.add_job(func=cronMethod.CHECK, args=(str(task.id),), trigger='cron', hour=runTime[0], minute=runTime[1], 
                                     month='*', second=00)
-        print(len(flaskConfig.scheduler.get_jobs()))
+        for job in flaskConfig.scheduler.get_jobs():
+            print(job)
+    
+    def setJobs():
+        tasks = mogudingTasks.query.filter_by(status=True).all()
+        for task in tasks:
+            # 运行时间，为时：分，[0]是时，[1]是分
+            runTime = task.runTime.split(':')
+            if task.runRule == "everyDay":
+                flaskConfig.scheduler.add_job(func=cronMethod.CHECK, args=(str(task.id),), trigger='cron', hour=runTime[0], minute=runTime[1], 
+                                day_of_week='mon-sun', second=00)
+
+            elif task.runRule == "everyWeek":
+                flaskConfig.scheduler.add_job(func=cronMethod.CHECK, args=(str(task.id),), trigger='cron', hour=runTime[0], minute=runTime[1], 
+                                    day_of_week='fri', second=00)
+
+            elif task.runRule == "everyMonth":
+                flaskConfig.scheduler.add_job(func=cronMethod.CHECK, args=(str(task.id),), trigger='cron', hour=runTime[0], minute=runTime[1], 
+                                    month='*', second=00)
         for job in flaskConfig.scheduler.get_jobs():
             print(job)
