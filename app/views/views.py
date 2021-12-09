@@ -1,5 +1,4 @@
 from flask import render_template, request, url_for, redirect, session
-from flask.wrappers import Request
 from config import flaskConfig
 from ..db.db import User, mogudingAccount, db, mogudingAddress, mogudingTasks
 
@@ -107,6 +106,14 @@ class API:
         for i in response['data']:
             planList['data'].append({"planName": i['planName'], "planId": i['planId']})
         return json.dumps(planList)
+
+    """
+        生成SIGN
+    """
+    def GenerateSign(x):
+        a = x.encode('utf-8')
+        a = hashlib.md5(a).hexdigest() 
+        return a
 
 class viewFunctions:
 

@@ -1,4 +1,5 @@
 from flask import Flask
+from apscheduler.schedulers.background import BackgroundScheduler
 
 class flaskConfig:
     # DEBUG模式
@@ -45,3 +46,5 @@ class flaskConfig:
         "accept-encoding": "gzip",
         "cache-control": "no-cache"
     }
+
+    scheduler = BackgroundScheduler(timezone='Asia/Shanghai')
