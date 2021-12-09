@@ -51,8 +51,8 @@ class mogudingAccount(db.Model):
     password = db.Column(db.String(255))
     token = db.Column(db.String(2555))
     userAgent = db.Column(db.String(2555))
+    userId = db.Column(db.String(255))
     remark = db.Column(db.String(255))
-    haveAddress = db.Column(db.Boolean)
 
 """
     蘑菇丁打卡地址表
@@ -70,3 +70,21 @@ class mogudingAddress(db.Model):
     detailedAddress = db.Column(db.String(2555))
     longitude = db.Column(db.String(255))
     latitude = db.Column(db.String(255))
+
+"""
+    打卡任务数据表
+"""
+class mogudingTasks(db.Model):
+    __tablename__ = 'mogudingTasks'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    owner = db.Column(db.String(255))
+    taskType = db.Column(db.String(255))
+    runAccount = db.Column(db.String(255))
+    runGoalId = db.Column(db.String(255))
+    runGoalName = db.Column(db.String(2555))
+    runRule = db.Column(db.String(255))
+    runTime = db.Column(db.String(255))
+    deviceType = db.Column(db.String(255))
+    status = db.Column(db.Boolean)
+    description = db.Column(db.String(2555))

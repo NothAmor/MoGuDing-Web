@@ -53,7 +53,10 @@
                         <td id="click1">{{ account.token }}</td>
                         <td id="click2">{{ account.userAgent }}</td>
                         <td>{{ account.remark }}</td>
-                        <td><button type="button" class="btn btn-danger mb-1">删除账户</button></td>
+                        <td><form action="/deleteAccount" method="post">
+                          <input type="text" name="id" value="{{ account.id }}" style="display: none;">
+                          <input type="submit" class="btn btn-danger mb-1" value="删除地址">
+                        </form></td>
                       </tr>
                       {% endfor %}
                       <script>

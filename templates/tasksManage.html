@@ -1,0 +1,298 @@
+{% include './include/dashboard_header.html' %}
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">任务管理</h1>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">首页</a></li>
+              <li class="breadcrumb-item active" aria-current="page">任务管理</li>
+            </ol>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12 mb-4">
+              <!-- Simple Tables -->
+              <div class="card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <!--<h6 class="m-0 font-weight-bold text-primary">Simple Tables</h6>-->
+                  <!--<button type="button" class="btn btn-success mb-1">添加账户</button>-->
+                  <a class="dropdown-item btn btn-success mb-1" href="javascript:void(0);" data-toggle="modal" data-target="#addAccount"
+                   style="width: 100px; padding-left: 20px; background-color: #35B56C; color: white; height: 35px;">
+                    添加任务
+                  </a>
+                  <p style="color: red; margin-left: 50px;">{{ alert }}</p>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                      <style>
+                        th, td {
+                          font-size: 14px;
+                          max-width: 100px;;
+                          text-align: center;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          white-space: nowrap;
+                          height: auto;
+                        }
+                      </style>
+                      <tr>
+                        <th>任务类型</th>
+                        <th>账户</th>
+                        <th>目标</th>
+                        <th>运行时间</th>
+                        <th>状态</th>
+                        <th>描述</th>
+                        <th style="width: 150px;">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for task in tasksQuery %}
+                      <tr>
+                        <td>
+                          {% if task.taskType == 'START' %}
+                            上班
+                          {% else %}
+                            下班
+                          {% endif %}
+                        </td>
+                        <td>{{ task.runAccount }}</td>
+                        <td>{{ task.runGoalName }}</td>
+                        <td>{{ task.runTime }}</td>
+                        <td>
+                          {% if task.status == True %}
+                          运行
+                        {% else %}
+                          停止
+                        {% endif %}</td>
+                        <td>{{ task.remark }}</td>
+                        <td><form action="/deleteTask" method="post">
+                          <input type="text" name="id" value="{{ task.id }}" style="display: none;">
+                          <input type="submit" class="btn btn-danger mb-1" value="删除任务">
+                        </form></td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="card-footer"></div>
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+
+        </div>
+        <!---Container Fluid-->
+      </div>
+
+      <!-- Modal addAccount -->
+      <div class="modal fade" id="addAccount" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabelLogout">添加任务</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <form method="post" action='/tasksManage'>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">任务类型</label>
+                  <select name="taskType" id="taskType" class="form-control">
+                    <option value="START">上班</option>
+                    <option value="END">下班</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">运行账号</label>
+                  <select name="account" id="account" class="form-control" onchange="setGoal()">
+                    {% for account in accountQuery %}
+                      <option value="">请选择账号</option>
+                      <option value="{{ account.phoneNumber }}">{{ account.phoneNumber }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">目标计划</label>
+                  <select name="runGoal" id="runGoal" class="form-control">
+                    <option value="">请选择实习计划</option>
+                  </select>
+                  <script>
+                    function setGoal() {
+                      let account = document.getElementById("account");
+                      let options = account.options;
+                      let index = account.selectedIndex;
+                      let selectedText = options[index].text;
+                      
+                      let goal = document.getElementById('runGoal');
+                      
+                      $.ajax({
+                      type: 'POST',
+                      url: "/getPlanId",
+                      data: {phoneNumber: selectedText},
+                      success: function(data) {
+                        let json = $.parseJSON(data);
+                        console.log(json.data);
+                        for(let i in json.data){
+                          let option = document.createElement("OPTION");
+                          option.value = json.data[i].planId + "&" + json.data[i].planName;
+                          option.text = json.data[i].planName;
+                          goal.add(option);
+                        }
+                      }
+                    });
+                    };
+                  </script>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">运行时间</label>
+                  <select name="runRule" id="runRule" class="form-control">
+                    <option value="everyDay">每天</option>
+                    <option value="everyWeek">每周</option>
+                    <option value="everyMonth">每月</option>
+                  </select>
+                  <div class="input-group clockpicker" id="clockPicker1">
+                    <input type="text" class="form-control" value="00:00" id="runTime" name="runTime">                     
+                    <div class="input-group-append">
+                      <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                    </div>                      
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">设备类型</label>
+                  <select name="deviceType" id="deviceType" class="form-control">
+                    <option value="ios">苹果</option>
+                    <option value="android">安卓</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <div class="form-group">
+                    <label>Radio Button</label>
+                    <div class="custom-control custom-radio">
+                      <input type="radio" id="customRadio3" name="runStatus" class="custom-control-input">
+                      <label class="custom-control-label" for="customRadio3">自动执行</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                      <input type="radio" id="customRadio4" name="runStatus" class="custom-control-input">
+                      <label class="custom-control-label" for="customRadio4">暂停执行</label>
+                    </div>
+                  </div>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">备注</label>
+                  <input type="text" class="form-control" id="remark" name="remark" placeholder="备注">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">取消</button>
+                  <button type="submit" class="btn btn-primary">添加账户</button>
+                </div>
+              </form>
+              </div>
+        </div>
+      </div>
+      </div>
+      <script>
+       
+    $(document).ready(function () {
+
+
+$('.select2-single').select2();
+
+// Select2 Single  with Placeholder
+$('.select2-single-placeholder').select2({
+  placeholder: "Select a Province",
+  allowClear: true
+});      
+
+// Select2 Multiple
+$('.select2-multiple').select2();
+
+// Bootstrap Date Picker
+$('#simple-date1 .input-group.date').datepicker({
+  format: 'dd/mm/yyyy',
+  todayBtn: 'linked',
+  todayHighlight: true,
+  autoclose: true,        
+});
+
+$('#simple-date2 .input-group.date').datepicker({
+  startView: 1,
+  format: 'dd/mm/yyyy',        
+  autoclose: true,     
+  todayHighlight: true,   
+  todayBtn: 'linked',
+});
+
+$('#simple-date3 .input-group.date').datepicker({
+  startView: 2,
+  format: 'dd/mm/yyyy',        
+  autoclose: true,     
+  todayHighlight: true,   
+  todayBtn: 'linked',
+});
+
+$('#simple-date4 .input-daterange').datepicker({        
+  format: 'dd/mm/yyyy',        
+  autoclose: true,     
+  todayHighlight: true,   
+  todayBtn: 'linked',
+});    
+
+// TouchSpin
+
+$('#touchSpin1').TouchSpin({
+  min: 0,
+  max: 100,                
+  boostat: 5,
+  maxboostedstep: 10,        
+  initval: 0
+});
+
+$('#touchSpin2').TouchSpin({
+  min:0,
+  max: 100,
+  decimals: 2,
+  step: 0.1,
+  postfix: '%',
+  initval: 0,
+  boostat: 5,
+  maxboostedstep: 10
+});
+
+$('#touchSpin3').TouchSpin({
+  min: 0,
+  max: 100,
+  initval: 0,
+  boostat: 5,
+  maxboostedstep: 10,
+  verticalbuttons: true,
+});
+
+$('#clockPicker1').clockpicker({
+  donetext: 'Done'
+});
+
+$('#clockPicker2').clockpicker({
+  autoclose: true
+});
+
+let input = $('#clockPicker3').clockpicker({
+  autoclose: true,
+  'default': 'now',
+  placement: 'top',
+  align: 'left',
+});
+
+$('#check-minutes').click(function(e){        
+  e.stopPropagation();
+  input.clockpicker('show').clockpicker('toggleView', 'minutes');
+});
+
+});
+
+      </script>
+      <script src="vendor/clock-picker/clockpicker.js"></script>
+      {% include './include/dashboard_footer.html' %}

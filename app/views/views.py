@@ -1,7 +1,7 @@
 from flask import render_template, request, url_for, redirect, session
 from flask.wrappers import Request
 from config import flaskConfig
-from ..db.db import User, mogudingAccount, db, mogudingAddress
+from ..db.db import User, mogudingAccount, db, mogudingAddress, mogudingTasks
 
 import hashlib
 import random
@@ -32,7 +32,7 @@ class API:
         if response['code'] != 200:
             return "error"
         else:
-            return response['data']['token']
+            return response['data']['userId'], response['data']['token']
 
     """
         返回sign值api
@@ -47,6 +47,66 @@ class API:
         string = md5.hexdigest()
 
         return string
+    
+    """
+        删除地址API
+    """
+    @flaskConfig.app.route('/deleteAddress', methods=['get', 'POST'])
+    def deleteAddress():
+        if request.method == 'POST':
+            id = request.form['id']
+            mogudingAddress.query.filter_by(id=id).delete()
+            db.session.commit()
+            return redirect('/addressManage')
+    
+    """
+        删除蘑菇丁账户API
+    """
+    @flaskConfig.app.route('/deleteAccount', methods=['get', 'POST'])
+    def deleteAccount():
+        if request.method == 'POST':
+            id = request.form['id']
+            mogudingAccount.query.filter_by(id=id).delete()
+            db.session.commit()
+            return redirect('/accountManage')
+    
+    """
+        删除打卡任务API
+    """
+    @flaskConfig.app.route('/deleteTask', methods=['get', 'POST'])
+    def deleteTask():
+        if request.method == 'POST':
+            id = request.form['id']
+            mogudingAccount.query.filter_by(id=id).delete()
+            db.session.commit()
+            return redirect('/tasksManage')
+    
+    """
+        拿planId的api
+    """
+    @flaskConfig.app.route('/getPlanId', methods=['get', 'POST'])
+    def returnPlanId():
+        url = "https://api.moguding.net:9000/practice/plan/v3/getPlanByStu"
+        phoneNumber = request.form['phoneNumber']
+
+        account = mogudingAccount.query.filter_by(phoneNumber=phoneNumber).first()
+        userId, token = API.returnToken(phoneNumber=account.phoneNumber, password=account.password, userAgent=account.userAgent)
+        mogudingAccount.query.filter_by(phoneNumber=phoneNumber).update({'token': token})
+        db.session.commit()
+
+        flaskConfig.request_header.update(
+            {"Authorization": token, "roleKey": "student", "sign": API.returnSign(userId=userId)}
+        )
+        data = {"state": ""}
+        response = requests.post(url, headers=flaskConfig.request_header, data=json.dumps(data), verify=False)
+        response = json.loads(response.text)
+        print(response)
+        planList = {
+            "data": []
+        }
+        for i in response['data']:
+            planList['data'].append({"planName": i['planName'], "planId": i['planId']})
+        return json.dumps(planList)
 
 class viewFunctions:
 
@@ -168,12 +228,12 @@ class viewFunctions:
                 if userAgent == "":
                     userAgent = flaskConfig.userAgents[random.randint(0, len(flaskConfig.userAgents) - 1)]
                 
-                token = API.returnToken(phoneNumber=phoneNumber, password=password, userAgent=userAgent)
+                userId, token = API.returnToken(phoneNumber=phoneNumber, password=password, userAgent=userAgent)
                 if token == "error":
                     token = "获取token出错，请检查账户信息，并删除账户重新尝试!"
 
                 addMoGuDingAccount = mogudingAccount(owner=session['email'], phoneNumber=phoneNumber, password=password, token=token,
-                                                     userAgent=userAgent, remark=remark)
+                                                     userAgent=userAgent, userId=userId, remark=remark)
                 db.session.add_all([addMoGuDingAccount])
                 db.session.commit()
                 accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
@@ -204,9 +264,6 @@ class viewFunctions:
             db.session.commit()
 
             accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
-            for account in accountQuery:
-                updateAccountAddressStatus = mogudingAccount.query.filter_by(mogudingAccount.phoneNumber == account.phoneNumber)
-
             addressQuery = mogudingAddress.query.filter_by(owner=session['email']).all()
             return render_template('addressManage.html', title="地址管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                     addressQuery=addressQuery)
@@ -215,6 +272,42 @@ class viewFunctions:
             addressQuery = mogudingAddress.query.filter_by(owner=session['email']).all()
             return render_template('addressManage.html', title="地址管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                     addressQuery=addressQuery, accountQuery=accountQuery)
+
+    """
+        任务管理
+    """
+    @flaskConfig.app.route('/tasksManage', methods=['get', 'POST'])
+    def tasksManage():
+        if request.method == 'POST':
+            taskType = request.form['taskType']
+            account = request.form['account']
+            runGoal = request.form['runGoal'].split('&')
+            runGoalId = runGoal[0]
+            runGoalName = runGoal[1]
+            runRule = request.form['runRule']
+            runTime = request.form['runTime']
+            deviceType = request.form['deviceType']
+            runStatus = request.form['runStatus']
+            if runStatus == "on":
+                runStatus = True
+            else:
+                runStatus = False
+            remark = request.form['remark']
+
+            addMoGuDingTask = mogudingTasks(owner=session['email'], taskType=taskType, runAccount=account, runGoalId=runGoalId, runRule=runRule, 
+                                            runTime=runTime, deviceType=deviceType, status=runStatus, description=remark, runGoalName=runGoalName)
+            db.session.add_all([addMoGuDingTask])
+            db.session.commit()
+
+            accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
+            tasksQuery = mogudingTasks.query.filter_by(owner=session['email']).all()
+            return render_template('tasksManage.html', title="任务管理 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                    tasksQuery=tasksQuery, accountQuery=accountQuery)
+        else:
+            accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
+            tasksQuery = mogudingTasks.query.filter_by(owner=session['email']).all()
+            return render_template('tasksManage.html', title="任务管理 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                    tasksQuery=tasksQuery, accountQuery=accountQuery)
 
     """
         404

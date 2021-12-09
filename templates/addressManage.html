@@ -55,7 +55,12 @@
                           <td>{{ address.detailedAddress }}</td>
                           <td>{{ address.longitude }}</td>
                           <td>{{ address.latitude }}</td>
-                          <td><button type="button" class="btn btn-danger mb-1">删除地址</button></td>
+                          <td>
+                            <form action="/deleteAddress" method="post">
+                              <input type="text" name="id" value="{{ address.id }}" style="display: none;">
+                              <input type="submit" class="btn btn-danger mb-1" value="删除地址">
+                            </form>
+                          </td>
                         </tr>
                       {% endfor %}
                     </tbody>
@@ -106,8 +111,8 @@
         where[29] = new comefrom("宁夏","银川|石嘴山|吴忠|固原");
         where[30] = new comefrom("青海","西宁|海东|海南|海北|黄南|玉树|果洛|海西");
         where[31] = new comefrom("新疆","乌鲁木齐|石河子|克拉玛依|伊犁|巴音郭勒|昌吉|克孜勒苏柯尔克孜|博尔塔拉|吐鲁番|哈密|喀什|和田|阿克苏");
-        where[32] = new comefrom("香港","");
-        where[33] = new comefrom("澳门","");
+        where[32] = new comefrom("香港","香港");
+        where[33] = new comefrom("澳门","澳门");
         where[34] = new comefrom("台湾","台北|高雄|台中|台南|屏东|南投|云林|新竹|彰化|苗栗|嘉义|花莲|桃园|宜兰|基隆|台东|金门|马祖|澎湖");
         where[35] = new comefrom("其它","北美洲|南美洲|亚洲|非洲|欧洲|大洋洲");
         

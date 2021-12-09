@@ -3,3 +3,4 @@ Flask-SQLAlchemy
 pymysql
 requests
 urllib3
+flask_apscheduler
