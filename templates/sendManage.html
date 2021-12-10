@@ -1,0 +1,107 @@
+{% include './include/dashboard_header.html' %}
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">推送管理</h1>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">首页</a></li>
+              <li class="breadcrumb-item active" aria-current="page">推送管理</li>
+            </ol>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12 mb-4">
+              <!-- Simple Tables -->
+              <div class="card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <!--<h6 class="m-0 font-weight-bold text-primary">Simple Tables</h6>-->
+                  <!--<button type="button" class="btn btn-success mb-1">添加账户</button>-->
+                  <a class="dropdown-item btn btn-success mb-1" href="javascript:void(0);" data-toggle="modal" data-target="#addAccount"
+                   style="width: 125px; padding-left: 14px; background-color: #35B56C; color: white; height: 35px;">
+                    添加推送方式
+                  </a>
+                  <p style="color: red; margin-left: 50px;">{{ alert }}</p>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                      <style>
+                        th, td {
+                          font-size: 14px;
+                          max-width: 100px;;
+                          text-align: center;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          white-space: nowrap;
+                          height: auto;
+                        }
+                      </style>
+                      <tr>
+                        <th>账户</th>
+                        <th>sendKey</th>
+                        <th style="width: 150px;">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for send in sendTaskQuery %}
+                        <tr>
+                          <td>{{ send.account }}</td>
+                          <td>{{ send.sendKey }}</td>
+                          <td>
+                            <form action="/deleteSendTask" method="post">
+                              <input type="text" name="id" value="{{ send.id }}" style="display: none;">
+                              <input type="submit" class="btn btn-danger mb-1" value="删除推送任务">
+                            </form>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="card-footer"></div>
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+
+        </div>
+        <!---Container Fluid-->
+      </div>
+
+      <!-- Modal addAccount -->
+      <div class="modal fade" id="addAccount" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabelLogout">添加推送方式</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <form method="post" action='/sendManage'>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">绑定账户</label>
+                  <select name="account" id="account" class="form-control" placeholder="请选择账户" required>
+                    {% for account in accountQuery %}
+                      <option value="{{ account.phoneNumber }}">{{ account.remark }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">server酱sendKey</label>
+                  <input type="text" class="form-control" id="sendKey" name="sendKey" placeholder="请输入sendKey" required>
+                </div>
+                <small id="phoneNumberHelp" class="form-text text-muted">不知道sendKey是什么？点击查看教程</small>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">取消</button>
+                  <button type="submit" class="btn btn-primary">添加推送方式</button>
+                </div>
+              </form>
+              </div>
+        </div>
+      </div>
+      </div>
+
+      {% include './include/dashboard_footer.html' %}

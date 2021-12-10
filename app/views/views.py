@@ -1,7 +1,7 @@
 from flask import render_template, request, url_for, redirect, session
 from sqlalchemy.sql.functions import func
 from config import flaskConfig
-from ..db.db import mogudingAccount, db, mogudingAddress, mogudingLogs, mogudingTasks, User
+from ..db.db import mogudingAccount, db, mogudingAddress, mogudingLogs, mogudingTaskSend, mogudingTasks, User
 
 import hashlib
 import random
@@ -78,9 +78,20 @@ class API:
     def deleteTask():
         if request.method == 'POST':
             id = request.form['id']
-            mogudingAccount.query.filter_by(id=id).delete()
+            mogudingTasks.query.filter_by(id=id).delete()
             db.session.commit()
             return redirect('/tasksManage')
+    
+    """
+        删除推送任务
+    """
+    @flaskConfig.app.route('/deleteSendTask', methods=['get', 'POST'])
+    def deleteSendTask():
+        if request.method == 'POST':
+            id = request.form['id']
+            mogudingTaskSend.query.filter_by(id=id).delete()
+            db.session.commit()
+            return redirect('/sendManage')
     
     """
         拿planId的api
@@ -116,6 +127,17 @@ class API:
         a = x.encode('utf-8')
         a = hashlib.md5(a).hexdigest() 
         return a
+    
+    """
+        server酱微信推送API
+    """
+    def weChatSendMsg(sendKey, title, desp):
+        url = "https://sctapi.ftqq.com/{}.send".format(sendKey)
+        body = {
+            "title": title,
+            "desp": desp
+        }
+        requests.post(url=url, data=body)
 
 class viewFunctions:
 
@@ -339,10 +361,33 @@ class viewFunctions:
         logs = mogudingLogs.query.filter_by(owner=session['email']).all()
         return render_template('taskLogs.html', title="任务日志 - {}".format(flaskConfig.websiteName), username=session['username'],
                                 logs=logs)
+    
+    """
+        推送管理页面
+    """
+    @flaskConfig.app.route('/sendManage', methods=['get', 'POST'])
+    def sendManage():
+        if request.method == "POST":
+            account = request.form['account']
+            sendKey = request.form['sendKey']
+
+            addMoGuDingSend = mogudingTaskSend(owner=session['email'], account=account, sendKey=sendKey)
+            db.session.add_all([addMoGuDingSend])
+            db.session.commit()
+
+            sendTaskQuery = mogudingTaskSend.query.filter_by(owner=session['email']).all()
+            accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
+            return render_template('sendManage.html', title="推送管理 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                accountQuery=accountQuery, sendTaskQuery=sendTaskQuery)
+        else:
+            accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
+            sendTaskQuery = mogudingTaskSend.query.filter_by(owner=session['email']).all()
+            return render_template('sendManage.html', title="推送管理 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                accountQuery=accountQuery, sendTaskQuery=sendTaskQuery)
 
     """
         404
     """
     @flaskConfig.app.errorhandler(404)
     def page_not_found(e):
-        return render_template('404.html', title="哦不！页面不见了！"), 404
+        return render_template('404.html', title="哦不! 页面不见了!"), 404

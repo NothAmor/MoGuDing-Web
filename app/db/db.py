@@ -111,3 +111,15 @@ class mogudingLogs(db.Model):
     runTime = db.Column(db.String(255))
     taskTime = db.Column(db.String(255))
     taskResult = db.Column(db.Boolean)
+    failReason = db.Column(db.String(2555))
+
+"""
+    打卡任务信息推送
+"""
+class mogudingTaskSend(db.Model):
+    __tablename__ = 'mogudingTaskSend'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    owner = db.Column(db.String(255))
+    account = db.Column(db.String(255))
+    sendKey = db.Column(db.String(255))

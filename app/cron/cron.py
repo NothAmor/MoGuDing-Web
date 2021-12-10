@@ -1,4 +1,4 @@
-from ..db.db import mogudingAddress, mogudingAccount, mogudingLogs, mogudingTasks, db
+from ..db.db import mogudingAddress, mogudingAccount, mogudingLogs, mogudingTaskSend, mogudingTasks, db
 from ..views.views import API
 from config import flaskConfig
 
@@ -55,6 +55,10 @@ class cronMethod:
         response = json.loads(response.text)
         end_time = time.time()
         run_time = end_time - begin_time
+
+        messageSend = mogudingTaskSend.query.filter_by(owner=owner, account=taskInformation.runAccount).all()
+        messageSendFirst = mogudingTaskSend.query.filter_by(owner=owner, account=taskInformation.runAccount).first()
+
         if response["code"] == 200:
             taskResult = True
             print("{}账户的{}点打卡任务已完成!".format(owner, taskInformation.runTime.split(':')[0]))
@@ -63,13 +67,17 @@ class cronMethod:
                                          taskTime=run_time, taskResult=taskResult)
             db.session.add_all([addTaskRecord])
             db.session.commit()
+            if len(messageSend) != 0:
+                API.weChatSendMsg(messageSendFirst.sendKey, "蘑菇丁打卡成功", "打卡状态：" + response["msg"] + "\n\n打卡时间：" + response["data"]["createTime"])
         else:
             taskResult = False
             addTaskRecord = mogudingLogs(owner=taskInformation.owner, taskType=taskInformation.taskType, account=taskInformation.runAccount, 
                                          goal=taskInformation.runGoalName, runTime=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
-                                         taskTime=run_time, taskResult=taskResult)
+                                         taskTime=run_time, taskResult=taskResult, failReason=response["msg"])
             db.session.add_all([addTaskRecord])
             db.session.commit()
+            if len(messageSend) != 0:
+                API.weChatSendMsg(messageSendFirst.sendKey, "蘑菇丁打卡失败", "打卡失败" + "\n\n失败原因：" + response["msg"])
             print(response)
             print("蘑菇丁打卡失败","打卡失败"+"\n\n失败原因："+response["msg"])
     

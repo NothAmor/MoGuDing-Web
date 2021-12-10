@@ -3,6 +3,7 @@ from config import flaskConfig
 from app.db.db import db
  
 if __name__ == '__main__':
+    db.create_all()
     #flaskConfig.scheduler.add_job(func=cronMethod.refreshJobs, trigger='cron', second='*/5', id='refresh')
     cronMethod.setJobs()
     flaskConfig.scheduler.start()
