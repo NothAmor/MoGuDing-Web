@@ -1,15 +1,23 @@
 from enum import unique
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from config import flaskConfig
 import pymysql
 pymysql.install_as_MySQLdb()
 
 class dbConfig(object):
+    # 上线数据库
+    # server = '47.101.38.190:3306'
+    # user = 'moguding'
+    # password = 'yfmPTJpHDWtSxsMM'
+    # database = 'moguding'
+
+    # 测试环境数据库
     server = '47.101.38.190:3306'
-    user = 'moguding'
-    password = 'yfmPTJpHDWtSxsMM'
-    database = 'moguding'
+    user = 'moguding-web'
+    password = 'Tm88wtk2pTSmmNDA'
+    database = 'moguding-web'
     flaskConfig.app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://%s:%s@%s/%s' % (user, password, server, database)
     
     # 设置sqlalchemy自动跟踪数据库
@@ -64,7 +72,7 @@ class mogudingAddress(db.Model):
     # 字段
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     owner = db.Column(db.String(255))
-    account = db.Column(db.String(255))
+    phoneNumber = db.Column(db.String(255))
     province = db.Column(db.String(255))
     city = db.Column(db.String(255))
     detailedAddress = db.Column(db.String(2555))
@@ -88,3 +96,18 @@ class mogudingTasks(db.Model):
     deviceType = db.Column(db.String(255))
     status = db.Column(db.Boolean)
     description = db.Column(db.String(2555))
+
+"""
+    任务日志
+"""
+class mogudingLogs(db.Model):
+    __tablename__ = 'mogudingLogs'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    owner = db.Column(db.String(255))
+    taskType = db.Column(db.String(255))
+    account = db.Column(db.String(255))
+    goal = db.Column(db.String(255))
+    runTime = db.Column(db.String(255))
+    taskTime = db.Column(db.String(255))
+    taskResult = db.Column(db.Boolean)

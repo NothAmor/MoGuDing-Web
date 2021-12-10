@@ -1,17 +1,20 @@
-from ..db.db import mogudingAddress, mogudingAccount, mogudingTasks
+from ..db.db import mogudingAddress, mogudingAccount, mogudingLogs, mogudingTasks, db
 from ..views.views import API
 from config import flaskConfig
 
+import datetime
 import requests
 import json
+import time
 
 class cronMethod:
     def CHECK(taskId):
+        begin_time = time.time()
         url = "https://api.moguding.net:9000/attendence/clock/v2/save"
         salt = "3478cbbc33f84bd00d75d7dfa69e0daa"
         taskInformation = mogudingTasks.query.filter_by(id=taskId).first()
         accountInformation = mogudingAccount.query.filter_by(phoneNumber=taskInformation.runAccount).first()
-        addressInformation = mogudingAddress.query.filter_by(account=accountInformation.remark).first()
+        addressInformation = mogudingAddress.query.filter_by(phoneNumber=taskInformation.runAccount).first()
 
         owner = accountInformation.owner
         address = addressInformation.detailedAddress
@@ -50,9 +53,23 @@ class cronMethod:
 
         response = requests.post(url, data=json.dumps(body), headers=flaskConfig.request_header, verify=False)
         response = json.loads(response.text)
+        end_time = time.time()
+        run_time = end_time - begin_time
         if response["code"] == 200:
+            taskResult = True
             print("{}账户的{}点打卡任务已完成!".format(owner, taskInformation.runTime.split(':')[0]))
+            addTaskRecord = mogudingLogs(owner=taskInformation.owner, taskType=taskInformation.taskType, account=taskInformation.runAccount, 
+                                         goal=taskInformation.runGoalName, runTime=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+                                         taskTime=run_time, taskResult=taskResult)
+            db.session.add_all([addTaskRecord])
+            db.session.commit()
         else:
+            taskResult = False
+            addTaskRecord = mogudingLogs(owner=taskInformation.owner, taskType=taskInformation.taskType, account=taskInformation.runAccount, 
+                                         goal=taskInformation.runGoalName, runTime=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+                                         taskTime=run_time, taskResult=taskResult)
+            db.session.add_all([addTaskRecord])
+            db.session.commit()
             print(response)
             print("蘑菇丁打卡失败","打卡失败"+"\n\n失败原因："+response["msg"])
     

@@ -1,11 +1,13 @@
 from flask import render_template, request, url_for, redirect, session
+from sqlalchemy.sql.functions import func
 from config import flaskConfig
-from ..db.db import User, mogudingAccount, db, mogudingAddress, mogudingTasks
+from ..db.db import mogudingAccount, db, mogudingAddress, mogudingLogs, mogudingTasks, User
 
 import hashlib
 import random
 import requests
 import urllib3
+import datetime
 urllib3.disable_warnings()
 import json
 
@@ -136,7 +138,17 @@ class viewFunctions:
         if session.get('email') == None:
             return redirect('/login')
         else:
-            return render_template('index.html', title="控制台 - {}".format(flaskConfig.websiteName), username=session['username'])
+            userCount = len(mogudingAccount.query.filter_by(owner=session['email']).all())
+            taskCount = len(mogudingTasks.query.filter_by(owner=session['email']).all())
+            runCount = mogudingLogs.query.filter_by(owner=session['email']).all()
+            currentMonthCount = 0
+            for run in runCount:
+                dbCurrentMonth = run.runTime.split('-')[1]
+                if int(dbCurrentMonth) == int(datetime.datetime.now().month):
+                    currentMonthCount += 1
+            sumCount = len(runCount)
+            return render_template('index.html', title="控制台 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                    userCount=userCount, taskCount=taskCount, currentMonthCount=currentMonthCount, sumCount=sumCount)
 
     """
         登陆页面处理方法
@@ -265,8 +277,8 @@ class viewFunctions:
             latitude = request.form['latitude']
 
             # 添加地址数据
-            addMoGuDingAddress = mogudingAddress(owner=session['email'], account=account, province=province, city=city, detailedAddress=address, longitude=longitude, 
-                                                 latitude=latitude)
+            addMoGuDingAddress = mogudingAddress(owner=session['email'], phoneNumber=account, province=province, city=city, detailedAddress=address, 
+                                                 longitude=longitude, latitude=latitude)
             db.session.add_all([addMoGuDingAddress])
             db.session.commit()
 
@@ -318,6 +330,15 @@ class viewFunctions:
             tasksQuery = mogudingTasks.query.filter_by(owner=session['email']).all()
             return render_template('tasksManage.html', title="任务管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                     tasksQuery=tasksQuery, accountQuery=accountQuery)
+
+    """
+        任务日志页面
+    """
+    @flaskConfig.app.route('/taskLogs')
+    def taskLogs():
+        logs = mogudingLogs.query.filter_by(owner=session['email']).all()
+        return render_template('taskLogs.html', title="任务日志 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                logs=logs)
 
     """
         404

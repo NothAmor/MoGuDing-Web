@@ -1,0 +1,80 @@
+{% include './include/dashboard_header.html' %}
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">任务日志</h1>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">首页</a></li>
+              <li class="breadcrumb-item active" aria-current="page">任务日志</li>
+            </ol>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12 mb-4">
+              <!-- Simple Tables -->
+              <div class="card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <!--<h6 class="m-0 font-weight-bold text-primary">Simple Tables</h6>-->
+                  <!--<button type="button" class="btn btn-success mb-1">添加账户</button>-->
+                  <p style="color: red; margin-left: 50px;">{{ alert }}</p>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                      <style>
+                        th, td {
+                          font-size: 14px;
+                          max-width: 100px;;
+                          text-align: center;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          white-space: nowrap;
+                          height: auto;
+                        }
+                      </style>
+                      <tr>
+                        <th>任务类型</th>
+                        <th>账户</th>
+                        <th>目标</th>
+                        <th>运行时间</th>
+                        <th>运行时长</th>
+                        <th>状态</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for log in logs %}
+                      <tr>
+                        <td>
+                          {% if log.taskType == 'START' %}
+                            上班
+                          {% elif log.taskType == 'END' %}
+                            下班
+                          {% endif %}
+                        </td>
+                        <td>{{ log.account }}</td>
+                        <td>{{ log.goal }}</td>
+                        <td>{{ log.runTime }}</td>
+                        <td>{{ log.taskTime }}</td>
+                        <td>
+                          {% if log.taskResult == True %}
+                            <p style="color: #008118;">运行成功</p>
+                          {% else %}
+                            <p style="color: red;">运行失败</p>
+                          {% endif %}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="card-footer"></div>
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+
+        </div>
+        <!---Container Fluid-->
+      </div>
+
+      {% include './include/dashboard_footer.html' %}

@@ -49,7 +49,7 @@
                     <tbody>
                       {% for address in addressQuery %}
                         <tr>
-                          <td>{{ address.account }}</td>
+                          <td>{{ address.phoneNumber }}</td>
                           <td>{{ address.province }}</td>
                           <td>{{ address.city }}</td>
                           <td>{{ address.detailedAddress }}</td>
@@ -199,7 +199,7 @@
                   <label for="exampleInputEmail1">绑定账户</label>
                   <select name="account" id="account" class="form-control" placeholder="请选择账户" required>
                     {% for account in accountQuery %}
-                      <option value="{{ account.remark }}">{{ account.remark }}</option>
+                      <option value="{{ account.phoneNumber }}">{{ account.remark }}</option>
                     {% endfor %}
                   </select>
                 </div>

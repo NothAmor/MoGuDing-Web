@@ -18,7 +18,7 @@
                   <div class="row align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-uppercase mb-1">当前用户数</div>
-                      <div class="h1 mb-0 font-weight-bold text-gray-800">0</div>
+                      <div class="h1 mb-0 font-weight-bold text-gray-800">{{ userCount }}</div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-users fa-2x text-primary"></i>
@@ -34,7 +34,7 @@
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-uppercase mb-1">当前任务数</div>
-                      <div class="h1 mb-0 font-weight-bold text-gray-800">0</div>
+                      <div class="h1 mb-0 font-weight-bold text-gray-800">{{ taskCount }}</div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-tasks fa-2x text-success"></i>
@@ -50,7 +50,7 @@
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-uppercase mb-1">本月执行数</div>
-                      <div class="h1 mb-0 mr-3 font-weight-bold text-gray-800">0</div>
+                      <div class="h1 mb-0 mr-3 font-weight-bold text-gray-800">{{ currentMonthCount }}</div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-handshake fa-2x text-info"></i>
@@ -66,7 +66,7 @@
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-uppercase mb-1">总计执行数</div>
-                      <div class="h1 mb-0 font-weight-bold text-gray-800">0</div>
+                      <div class="h1 mb-0 font-weight-bold text-gray-800">{{ sumCount }}</div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-bolt fa-2x text-warning"></i>
@@ -112,7 +112,7 @@
                 </div>
                 <div class="card-body">
                   <div class="mb-3">
-                    <div class="small text-gray-1000">第一步：在账号管理中添加蘑菇丁或工学云账号
+                    <div class="small text-gray-1000">第一步：在账号管理中添加蘑菇丁账号
                     </div>
                   </div>
                   <div class="mb-3">
