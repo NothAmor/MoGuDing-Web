@@ -1,4 +1,3 @@
-from enum import unique
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
@@ -22,6 +21,9 @@ class dbConfig(object):
     
     # 设置sqlalchemy自动跟踪数据库
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+    # 重连参数。连接超过一定时间就将它回收
+    SQLALCHEMY_POOL_RECYCLE = 7200
 
     # 查询时显示原始SQL语句
     flaskConfig.app.config['SQLALCHEMY_ECHO'] = True
