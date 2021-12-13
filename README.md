@@ -15,6 +15,7 @@
 
 ## 部署该项目
 
+首先填写`app/db/db.py`中的数据库连接信息
 ```shell
 git clone https://github.com/NothAmor/MoGuDing-Web.git
 cd MoGuDing-Web
