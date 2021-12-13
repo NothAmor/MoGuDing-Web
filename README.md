@@ -16,7 +16,7 @@
 ## 部署该项目
 
 ```shell
-git clone http://kod.nothamor.cn:3000/NothAmor/MoGuDing-Web.git
+git clone https://github.com/NothAmor/MoGuDing-Web.git
 cd MoGuDing-Web
 pip3 install -r requirements.txt
 python3 run.py
