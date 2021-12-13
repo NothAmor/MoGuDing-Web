@@ -21,3 +21,6 @@ cd MoGuDing-Web
 pip3 install -r requirements.txt
 python3 run.py
 ```
+
+## 感谢indrijunanda的html模版
+https://github.com/indrijunanda/RuangAdmin
