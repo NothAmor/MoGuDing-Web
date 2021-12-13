@@ -44,6 +44,7 @@
                         <th>状态</th>
                         <th>描述</th>
                         <th style="width: 150px;">操作</th>
+                        <th style="width: 150px;">手动执行</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -69,6 +70,10 @@
                         <td><form action="/deleteTask" method="post">
                           <input type="text" name="id" value="{{ task.id }}" style="display: none;">
                           <input type="submit" class="btn btn-danger mb-1" value="删除任务">
+                        </form></td>
+                        <td><form action="/runTask" method="post">
+                          <input type="text" name="id" value="{{ task.id }}" style="display: none;">
+                          <input type="submit" class="btn btn-danger mb-1" value="运行任务">
                         </form></td>
                       </tr>
                       {% endfor %}

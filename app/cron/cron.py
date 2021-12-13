@@ -47,12 +47,25 @@ class cronMethod:
             "planId": planId
         }
         flaskConfig.request_header.update(
-            {"user-agent": userAgent, "roleKey": "student", }
+            {"user-agent": userAgent, "roleKey": "student"}
         )
         flaskConfig.request_header["sign"] = sign
 
+        #response = requests.post(url, data=json.dumps(body), headers=flaskConfig.request_header, verify=False)
         response = requests.post(url, data=json.dumps(body), headers=flaskConfig.request_header, verify=False)
         response = json.loads(response.text)
+        if response["msg"] == 'token失效':
+            count = 0
+            while True:
+                if count == 5:
+                    break
+                userId, token = API.returnToken(phoneNumber=phoneNumber, password=password, userAgent=userAgent)
+                flaskConfig.request_header["authorization"] = token
+                response = requests.post(url, data=json.dumps(body), headers=flaskConfig.request_header, verify=False)
+                response = json.loads(response.text)
+                count += 1
+                if response["code"] == 200:
+                    break
         end_time = time.time()
         run_time = end_time - begin_time
 
@@ -68,7 +81,7 @@ class cronMethod:
             db.session.add_all([addTaskRecord])
             db.session.commit()
             if len(messageSend) != 0:
-                API.weChatSendMsg(messageSendFirst.sendKey, "蘑菇丁打卡成功", "打卡状态：" + response["msg"] + "\n\n打卡时间：" + response["data"]["createTime"])
+                API.weChatSendMsg(messageSendFirst.sendKey, "蘑菇丁打卡成功", "打卡状态: " + response["msg"] + "\n\n打卡时间: " + response["data"]["createTime"])
         else:
             taskResult = False
             addTaskRecord = mogudingLogs(owner=taskInformation.owner, taskType=taskInformation.taskType, account=taskInformation.runAccount, 
@@ -77,9 +90,9 @@ class cronMethod:
             db.session.add_all([addTaskRecord])
             db.session.commit()
             if len(messageSend) != 0:
-                API.weChatSendMsg(messageSendFirst.sendKey, "蘑菇丁打卡失败", "打卡失败" + "\n\n失败原因：" + response["msg"])
+                API.weChatSendMsg(messageSendFirst.sendKey, "蘑菇丁打卡失败", "打卡失败" + "\n\n失败原因: " + response["msg"])
             print(response)
-            print("蘑菇丁打卡失败","打卡失败"+"\n\n失败原因："+response["msg"])
+            print("蘑菇丁打卡失败","打卡失败"+"\n\n失败原因: "+response["msg"])
     
     def refreshJobs():
         for job in flaskConfig.scheduler.get_jobs():

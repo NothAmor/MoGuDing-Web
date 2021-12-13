@@ -1,5 +1,6 @@
 from flask import render_template, request, url_for, redirect, session
 from sqlalchemy.sql.functions import func
+from app.cron.cron import cronMethod
 from config import flaskConfig
 from ..db.db import mogudingAccount, db, mogudingAddress, mogudingLogs, mogudingTaskSend, mogudingTasks, User
 
@@ -31,7 +32,7 @@ class API:
         response = requests.post(url=url, headers=flaskConfig.request_header, data=json.dumps(request_body), verify=False)
         response = json.loads(response.text)
         if response['code'] != 200:
-            return "error"
+            return "error", "error"
         else:
             return response['data']['userId'], response['data']['token']
 
@@ -384,6 +385,16 @@ class viewFunctions:
             sendTaskQuery = mogudingTaskSend.query.filter_by(owner=session['email']).all()
             return render_template('sendManage.html', title="推送管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                 accountQuery=accountQuery, sendTaskQuery=sendTaskQuery)
+
+    """
+        手动执行任务
+    """
+    @flaskConfig.app.route('/runTask', methods=['get', 'POST'])
+    def runTask():
+        if request.method == 'POST':
+            taskId = request.form['taskId']
+            cronMethod.CHECK(taskId)
+            redirect('/taskLogs')
 
     """
         404

@@ -39,6 +39,7 @@
                         <th>运行时间</th>
                         <th>运行时长</th>
                         <th>状态</th>
+                        <th>失败原因</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -62,6 +63,7 @@
                             <p style="color: red;">运行失败</p>
                           {% endif %}
                         </td>
+                        <td>{{ log.failReason }}</td>
                       </tr>
                       {% endfor %}
                     </tbody>
