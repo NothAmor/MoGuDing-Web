@@ -1,6 +1,5 @@
 from flask import render_template, request, url_for, redirect, session
 from sqlalchemy.sql.functions import func
-from app.cron.cron import cronMethod
 from config import flaskConfig
 from ..db.db import mogudingAccount, db, mogudingAddress, mogudingLogs, mogudingTaskSend, mogudingTasks, User
 
@@ -392,6 +391,7 @@ class viewFunctions:
     @flaskConfig.app.route('/runTask', methods=['get', 'POST'])
     def runTask():
         if request.method == 'POST':
+            from ..cron.cron import cronMethod
             taskId = request.form['taskId']
             cronMethod.CHECK(taskId)
             redirect('/taskLogs')
