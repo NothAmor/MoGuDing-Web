@@ -72,8 +72,8 @@
                           <input type="submit" class="btn btn-danger mb-1" value="删除任务">
                         </form></td>
                         <td><form action="/runTask" method="post">
-                          <input type="text" name="id" value="{{ task.id }}" style="display: none;">
-                          <input type="submit" class="btn btn-danger mb-1" value="运行任务">
+                          <input type="text" name="taskId" value="{{ task.id }}" style="display: none;">
+                          <input type="submit" class="btn btn-success mb-1" value="运行任务">
                         </form></td>
                       </tr>
                       {% endfor %}

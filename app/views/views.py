@@ -394,7 +394,9 @@ class viewFunctions:
             from ..cron.cron import cronMethod
             taskId = request.form['taskId']
             cronMethod.CHECK(taskId)
-            redirect('/taskLogs')
+            return redirect('/taskLogs')
+        else:
+            return redirect('/taskLogs')
 
     """
         404
