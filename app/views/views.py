@@ -30,6 +30,8 @@ class API:
 
         response = requests.post(url=url, headers=flaskConfig.request_header, data=json.dumps(request_body), verify=False)
         response = json.loads(response.text)
+        mogudingAccount.query.filter_by(phoneNumber=phoneNumber).update({'token': response['data']['token']})
+        db.session.commit()
         if response['code'] != 200:
             return "error", "error"
         else:

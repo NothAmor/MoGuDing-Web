@@ -213,8 +213,8 @@
                   <select name="city" id="city" onchange="select()" class="form-control" placeholder="请选择城市" required></select>
                 </div>
                 <div class="form-group">
-                  <label for="exampleInputPassword1">详细地址</label>
-                  <input type="text" class="form-control" id="address" name="address" placeholder="请输入详细地址（不包括省市）" required>
+                  <label for="exampleInputPassword1">详细地址（包括省市）</label>
+                  <input type="text" class="form-control" id="address" name="address" placeholder="请输入详细地址（包括省市）" required>
                 </div>
                 <div class="form-group">
                   <label for="exampleInputPassword1">经度</label>
@@ -224,7 +224,7 @@
                   <label for="exampleInputPassword1">纬度</label>
                   <input type="text" class="form-control" id="latitude" name="latitude" placeholder="请输入纬度" required>
                 </div>
-                <small id="phoneNumberHelp" class="form-text text-muted">不知道经纬度？点击查询</small>
+                <small id="phoneNumberHelp" class="form-text text-muted"><a href="http://api.map.baidu.com/lbsapi/getpoint/">不知道经纬度？点击查询</a></small>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-outline-primary" data-dismiss="modal">取消</button>
                   <button type="submit" class="btn btn-primary">添加地址</button>

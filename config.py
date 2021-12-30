@@ -3,7 +3,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 class flaskConfig:
     # DEBUG模式
-    DEBUG = True
+    DEBUG = False
 
     # 网站URL
     url = "http://127.0.0.1:5000/"

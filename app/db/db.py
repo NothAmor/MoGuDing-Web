@@ -17,7 +17,7 @@ class dbConfig(object):
     user = 'moguding-web'
     password = 'Tm88wtk2pTSmmNDA'
     database = 'moguding-web'
-    flaskConfig.app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://%s:%s@%s/%s' % (user, password, server, database)
+    flaskConfig.app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://%s:%s@%s/%s?charset=utf8&autocommit=true' % (user, password, server, database)
     
     # 设置sqlalchemy自动跟踪数据库
     SQLALCHEMY_TRACK_MODIFICATIONS = True
