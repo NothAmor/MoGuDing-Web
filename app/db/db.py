@@ -6,12 +6,6 @@ import pymysql
 pymysql.install_as_MySQLdb()
 
 class dbConfig(object):
-    # 上线数据库
-    # server = '47.101.38.190:3306'
-    # user = 'moguding'
-    # password = 'yfmPTJpHDWtSxsMM'
-    # database = 'moguding'
-
     # 测试环境数据库
     server = '47.101.38.190:3306'
     user = 'moguding-web'

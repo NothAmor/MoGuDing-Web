@@ -50,24 +50,7 @@ class cronCheckMethod:
             "phone": phoneNumber
         }
 
-        print("开始获取代理")
-        proxies = {}
-        while True:
-            proxyRequest = requests.get(flaskConfig.proxyApiUrl)
-            proxyContent = json.loads(proxyRequest.content)
-            proxies = {"https": "https://" + proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]}
-            print(proxies)
-
-            req = requests.post(url, data=json.dumps(data), headers=headers, verify=False, timeout=5, proxies=proxies)
-            text = req.json()
-            print(text)
-            if text["code"] == 200:
-                break
-            else:
-                print("代理IP: {}，无效，继续尝试!".format(proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]))
-                time.sleep(1)
-                continue
-
+        req = requests.post(url, data=json.dumps(data), headers=headers, verify=False, timeout=5)
         text = req.json()
         print(text)
         token = json.loads(req.text)['data']['token']
@@ -90,7 +73,7 @@ class cronCheckMethod:
         headers["sign"] = API.GenerateSign("Android" + taskType + planId + userId + address + salt)
 
         saveUrl = "https://api.moguding.net:9000/attendence/clock/v2/save"
-        response = requests.post(saveUrl, data=json.dumps(body), headers=headers, verify=False, timeout=20, proxies=proxies)
+        response = requests.post(saveUrl, data=json.dumps(body), headers=headers, verify=False, timeout=20)
         response = json.loads(response.text)
         print(response)
         end_time = time.time()

@@ -28,27 +28,7 @@ class API:
             "uuid": ""
         }
 
-        print("开始获取代理")
-        proxies = {}
-        import time
-        while True:
-            proxyRequest = requests.get(flaskConfig.proxyApiUrl)
-            proxyContent = json.loads(proxyRequest.content)
-            proxies = {"https": "https://" + proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]}
-            print(proxies)
-
-            url = "https://api.moguding.net:9000/session/user/v1/login"
-            req = requests.post(url, verify=False, timeout=5, proxies=proxies)
-            text = req.json()
-            print(text)
-            if text["code"] == 500:
-                break
-            else:
-                print("代理IP: {}，无效，继续尝试!".format(proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]))
-                time.sleep(1)
-                continue
-
-        response = requests.post(url=url, headers=flaskConfig.request_header, data=json.dumps(request_body), verify=False, proxies=proxies)
+        response = requests.post(url=url, headers=flaskConfig.request_header, data=json.dumps(request_body), verify=False)
         response = json.loads(response.text)
         mogudingAccount.query.filter_by(phoneNumber=phoneNumber).update({'token': response['data']['token']})
         db.session.commit()
@@ -133,27 +113,7 @@ class API:
         )
         data = {"state": ""}
 
-        print("开始获取代理")
-        proxies = {}
-        import time
-        while True:
-            proxyRequest = requests.get(flaskConfig.proxyApiUrl)
-            proxyContent = json.loads(proxyRequest.content)
-            proxies = {"https": "https://" + proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]}
-            print(proxies)
-
-            url = "https://api.moguding.net:9000/session/user/v1/login"
-            req = requests.post(url, verify=False, timeout=5, proxies=proxies)
-            text = req.json()
-            print(text)
-            if text["code"] == 500:
-                break
-            else:
-                print("代理IP: {}，无效，继续尝试!".format(proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]))
-                time.sleep(1)
-                continue
-
-        response = requests.post(url, headers=flaskConfig.request_header, data=json.dumps(data), verify=False, proxies=proxies)
+        response = requests.post(url, headers=flaskConfig.request_header, data=json.dumps(data), verify=False)
         response = json.loads(response.text)
         print(response)
         planList = {
