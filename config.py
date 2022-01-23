@@ -48,3 +48,7 @@ class flaskConfig:
     }
 
     scheduler = BackgroundScheduler(timezone='Asia/Shanghai')
+
+    proxies = {
+        "https": "https://183.230.106.87:3128"
+    }

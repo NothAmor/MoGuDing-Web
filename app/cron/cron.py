@@ -9,14 +9,6 @@ import time
 
 class cronMethod:
     def CHECK(taskId):
-        headers = {
-            'Accept-Language':"zh-CN,zh;q=0.8",
-            'roleKey': 'student',
-            'Host':'api.moguding.net:9000',
-            "Content-Type": "application/json; charset=UTF-8",
-            "Cache-Control": "no-cache",
-            'User-Agent': 'Mozilla/5.0 (Linux; U; Android 11; zh-cn; RMX2072 Build/RKQ1.200710.002) AppleWebKit/533.1 (KHTML, like Gecko) Version/5.0 Mobile Safari/533.1',
-        }
         begin_time = time.time()
         url = "https://api.moguding.net:9000/attendence/clock/v2/save"
         salt = "3478cbbc33f84bd00d75d7dfa69e0daa"
@@ -39,6 +31,15 @@ class cronMethod:
         phoneNumber = accountInformation.phoneNumber
         password = accountInformation.password
 
+        headers = {
+            'Accept-Language':"zh-CN,zh;q=0.8",
+            'roleKey': 'student',
+            'Host':'api.moguding.net:9000',
+            "Content-Type": "application/json; charset=UTF-8",
+            "Cache-Control": "no-cache",
+            'User-Agent': userAgent
+        }
+
         url = "https://api.moguding.net:9000/session/user/v1/login"
 
         print("开始登录...")
@@ -48,7 +49,7 @@ class cronMethod:
             "uuid": "",
             "phone": phoneNumber
         }
-        req = requests.post(url,data=json.dumps(data),headers=headers,verify=False)
+        req = requests.post(url,data=json.dumps(data),headers=headers,verify=False, timeout=20, proxies=flaskConfig.proxies)
         text = req.json()
         print(text)
         token = json.loads(req.text)['data']['token']
@@ -71,21 +72,9 @@ class cronMethod:
         headers["sign"] = API.GenerateSign("Android" + taskType + planId + userId + address + salt)
 
         saveUrl = "https://api.moguding.net:9000/attendence/clock/v2/save"
-        response = requests.post(saveUrl, data=json.dumps(body), headers=headers, verify=False)
+        response = requests.post(saveUrl, data=json.dumps(body), headers=headers, verify=False, timeout=20, proxies=flaskConfig.proxies)
         response = json.loads(response.text)
         print(response)
-        if response["msg"] == 'token失效':
-            count = 0
-            while True:
-                if count == 2:
-                    break
-                userId, token = API.returnToken(phoneNumber=phoneNumber, password=password, userAgent=userAgent)
-                headers["authorization"] = token
-                response = requests.post(url, data=json.dumps(body), headers=headers, verify=False)
-                response = json.loads(response.text)
-                count += 1
-                if response["code"] == 200:
-                    break
         end_time = time.time()
         run_time = end_time - begin_time
 

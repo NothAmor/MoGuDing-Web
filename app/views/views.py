@@ -28,7 +28,7 @@ class API:
             "uuid": ""
         }
 
-        response = requests.post(url=url, headers=flaskConfig.request_header, data=json.dumps(request_body), verify=False)
+        response = requests.post(url=url, headers=flaskConfig.request_header, data=json.dumps(request_body), verify=False, proxies=flaskConfig.proxies)
         response = json.loads(response.text)
         mogudingAccount.query.filter_by(phoneNumber=phoneNumber).update({'token': response['data']['token']})
         db.session.commit()
@@ -112,7 +112,7 @@ class API:
             {"Authorization": token, "roleKey": "student", "sign": API.returnSign(userId=userId)}
         )
         data = {"state": ""}
-        response = requests.post(url, headers=flaskConfig.request_header, data=json.dumps(data), verify=False)
+        response = requests.post(url, headers=flaskConfig.request_header, data=json.dumps(data), verify=False, proxies=flaskConfig.proxies)
         response = json.loads(response.text)
         print(response)
         planList = {
@@ -343,7 +343,7 @@ class viewFunctions:
             db.session.commit()
 
             from ..cron.cron import cronMethod
-            cronMethod.refreshJobs()
+            cronMethod.setJobs()
 
             accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
             tasksQuery = mogudingTasks.query.filter_by(owner=session['email']).all()
