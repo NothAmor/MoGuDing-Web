@@ -5,10 +5,10 @@ from config import flaskConfig
 import datetime
 import requests
 import json
-import time
 
 class cronCheckMethod:
     def CHECK(taskId):
+        import time
         begin_time = time.time()
         url = "https://api.moguding.net:9000/attendence/clock/v2/save"
         salt = "3478cbbc33f84bd00d75d7dfa69e0daa"
