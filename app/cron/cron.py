@@ -62,10 +62,9 @@ class cronCheckMethod:
             proxies = {"https": "https://" + proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]}
             print(proxies)
 
-            testUrl = "https://api.moguding.net:9000/session/user/v1/login"
-            req = requests.post(testUrl, verify=False, timeout=5, proxies=proxies)
+            req = requests.post(url=url, headers=flaskConfig.request_header, data=json.dumps(data), verify=False, proxies=proxies)
             text = req.json()
-            if text["code"] == 500:
+            if text["code"] == 200:
                 break
             else:
                 print("代理IP: {}，无效，继续尝试!".format(proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]))
