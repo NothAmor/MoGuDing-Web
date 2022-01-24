@@ -52,23 +52,26 @@ class cronCheckMethod:
 
         print("开始获取代理")
         proxies = {}
+        import time
         while True:
             proxyRequest = requests.get(flaskConfig.proxyApiUrl)
             proxyContent = json.loads(proxyRequest.content)
+            ip = proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]
+            print(proxyContent, ip)
+
             proxies = {"https": "https://" + proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]}
             print(proxies)
 
-            req = requests.post(url, data=json.dumps(data), headers=headers, verify=False, timeout=5, proxies=proxies)
+            testUrl = "https://api.moguding.net:9000/session/user/v1/login"
+            req = requests.post(testUrl, verify=False, timeout=5, proxies=proxies)
             text = req.json()
-            print(text)
-            if text["code"] == 200:
+            if text["code"] == 500:
                 break
             else:
                 print("代理IP: {}，无效，继续尝试!".format(proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]))
                 time.sleep(1)
                 continue
 
-        text = req.json()
         print(text)
         token = json.loads(req.text)['data']['token']
         userId = json.loads(req.text)['data']['userId']

@@ -15,7 +15,7 @@ class API:
     """
         返回token值api
     """
-    def returnToken(phoneNumber, password, userAgent):
+    def returnToken(phoneNumber, password, userAgent, proxies):
         url = "https://api.moguding.net:9000/session/user/v1/login"
         flaskConfig.request_header.update(
             {"user-agent": userAgent}
@@ -27,26 +27,6 @@ class API:
             "loginType": "android",
             "uuid": ""
         }
-
-        print("开始获取代理")
-        proxies = {}
-        import time
-        while True:
-            proxyRequest = requests.get(flaskConfig.proxyApiUrl)
-            proxyContent = json.loads(proxyRequest.content)
-            proxies = {"https": "https://" + proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]}
-            print(proxies)
-
-            url = "https://api.moguding.net:9000/session/user/v1/login"
-            req = requests.post(url, verify=False, timeout=5, proxies=proxies)
-            text = req.json()
-            print(text)
-            if text["code"] == 500:
-                break
-            else:
-                print("代理IP: {}，无效，继续尝试!".format(proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]))
-                time.sleep(1)
-                continue
 
         response = requests.post(url=url, headers=flaskConfig.request_header, data=json.dumps(request_body), verify=False, proxies=proxies)
         response = json.loads(response.text)
@@ -120,18 +100,7 @@ class API:
     """
     @flaskConfig.app.route('/getPlanId', methods=['get', 'POST'])
     def returnPlanId():
-        url = "https://api.moguding.net:9000/practice/plan/v3/getPlanByStu"
         phoneNumber = request.form['phoneNumber']
-
-        account = mogudingAccount.query.filter_by(phoneNumber=phoneNumber).first()
-        userId, token = API.returnToken(phoneNumber=account.phoneNumber, password=account.password, userAgent=account.userAgent)
-        mogudingAccount.query.filter_by(phoneNumber=phoneNumber).update({'token': token})
-        db.session.commit()
-
-        flaskConfig.request_header.update(
-            {"Authorization": token, "roleKey": "student", "sign": API.returnSign(userId=userId)}
-        )
-        data = {"state": ""}
 
         print("开始获取代理")
         proxies = {}
@@ -139,13 +108,16 @@ class API:
         while True:
             proxyRequest = requests.get(flaskConfig.proxyApiUrl)
             proxyContent = json.loads(proxyRequest.content)
-            proxies = {"https": "https://" + proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]}
+            ip = proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]
+            print(proxyContent)
+            print(ip)
+
+            proxies = {"https": "https://" + ip}
             print(proxies)
 
-            url = "https://api.moguding.net:9000/session/user/v1/login"
-            req = requests.post(url, verify=False, timeout=5, proxies=proxies)
+            testUrl = "https://api.moguding.net:9000/session/user/v1/login"
+            req = requests.post(testUrl, verify=False, timeout=5, proxies=proxies)
             text = req.json()
-            print(text)
             if text["code"] == 500:
                 break
             else:
@@ -153,6 +125,34 @@ class API:
                 time.sleep(1)
                 continue
 
+        account = mogudingAccount.query.filter_by(phoneNumber=phoneNumber).first()
+        # userId, token = API.returnToken(phoneNumber=account.phoneNumber, password=account.password, userAgent=account.userAgent, proxies=proxies)
+        # mogudingAccount.query.filter_by(phoneNumber=phoneNumber).update({'token': token})
+        # db.session.commit()
+
+        url = "https://api.moguding.net:9000/session/user/v1/login"
+        flaskConfig.request_header.update(
+            {"user-agent": account.userAgent}
+        )
+
+        request_body = {
+            "phone": account.phoneNumber,
+            "password": account.password,
+            "loginType": "android",
+            "uuid": ""
+        }
+
+        response = requests.post(url=url, headers=flaskConfig.request_header, data=json.dumps(request_body), verify=False, proxies=proxies)
+        response = json.loads(response.text)
+        mogudingAccount.query.filter_by(phoneNumber=phoneNumber).update({'token': response['data']['token']})
+        db.session.commit()
+
+        flaskConfig.request_header.update(
+            {"Authorization": response['data']['token'], "roleKey": "student", "sign": API.returnSign(userId=response['data']['userId'])}
+        )
+        data = {"state": ""}
+
+        url = "https://api.moguding.net:9000/practice/plan/v3/getPlanByStu"
         response = requests.post(url, headers=flaskConfig.request_header, data=json.dumps(data), verify=False, proxies=proxies)
         response = json.loads(response.text)
         print(response)
@@ -313,7 +313,30 @@ class viewFunctions:
                 if userAgent == "":
                     userAgent = flaskConfig.userAgents[random.randint(0, len(flaskConfig.userAgents) - 1)]
                 
-                userId, token = API.returnToken(phoneNumber=phoneNumber, password=password, userAgent=userAgent)
+                print("开始获取代理")
+                proxies = {}
+                import time
+                while True:
+                    proxyRequest = requests.get(flaskConfig.proxyApiUrl)
+                    proxyContent = json.loads(proxyRequest.content)
+                    ip = proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]
+                    print(proxyContent)
+                    print(ip)
+
+                    proxies = {"https": "https://" + ip}
+                    print(proxies)
+
+                    testUrl = "https://api.moguding.net:9000/session/user/v1/login"
+                    req = requests.post(testUrl, verify=False, timeout=5, proxies=proxies)
+                    text = req.json()
+                    if text["code"] == 500:
+                        break
+                    else:
+                        print("代理IP: {}，无效，继续尝试!".format(proxyContent["obj"][0]["ip"] + ":" + proxyContent["obj"][0]["port"]))
+                        time.sleep(1)
+                        continue
+
+                userId, token = API.returnToken(phoneNumber=phoneNumber, password=password, userAgent=userAgent, proxies=proxies)
                 if token == "error":
                     token = "获取token出错，请检查账户信息，并删除账户重新尝试!"
 
