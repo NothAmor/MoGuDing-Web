@@ -1,12 +1,12 @@
+from gevent import monkey
+monkey.patch_all(thread=True)
+
+from gevent.pywsgi import WSGIServer
+
 from app.cron.cron import cronCheckMethod
 from config import flaskConfig
 from app.db.db import db
 
-from gevent.pywsgi import WSGIServer
-from gevent import monkey
-monkey.patch_all()
-
- 
 if __name__ == '__main__':
     db.create_all()
     flaskConfig.scheduler.add_job(func=cronCheckMethod.setJobs, day_of_week='mon-sun', trigger='cron', id='refresh')
