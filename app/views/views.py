@@ -348,9 +348,12 @@ class viewFunctions:
                 return render_template('accountManage.html', title="账户管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                         alert=alert, accountQuery=accountQuery)
         else:
-            accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
-            return render_template('accountManage.html', title="账户管理 - {}".format(flaskConfig.websiteName), username=session['username'],
-                                    accountQuery=accountQuery)
+            if session.get('email') == None:
+                return redirect('/login')
+            else:
+                accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
+                return render_template('accountManage.html', title="账户管理 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                        accountQuery=accountQuery)
     
     """
         地址管理
@@ -376,10 +379,13 @@ class viewFunctions:
             return render_template('addressManage.html', title="地址管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                     addressQuery=addressQuery)
         else:
-            accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
-            addressQuery = mogudingAddress.query.filter_by(owner=session['email']).all()
-            return render_template('addressManage.html', title="地址管理 - {}".format(flaskConfig.websiteName), username=session['username'],
-                                    addressQuery=addressQuery, accountQuery=accountQuery)
+            if session.get('email') == None:
+                return redirect('/login')
+            else:
+                accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
+                addressQuery = mogudingAddress.query.filter_by(owner=session['email']).all()
+                return render_template('addressManage.html', title="地址管理 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                        addressQuery=addressQuery, accountQuery=accountQuery)
 
     """
         任务管理
@@ -415,19 +421,25 @@ class viewFunctions:
             return render_template('tasksManage.html', title="任务管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                     tasksQuery=tasksQuery, accountQuery=accountQuery)
         else:
-            accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
-            tasksQuery = mogudingTasks.query.filter_by(owner=session['email']).all()
-            return render_template('tasksManage.html', title="任务管理 - {}".format(flaskConfig.websiteName), username=session['username'],
-                                    tasksQuery=tasksQuery, accountQuery=accountQuery)
+            if session.get('email') == None:
+                return redirect('/login')
+            else:
+                accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
+                tasksQuery = mogudingTasks.query.filter_by(owner=session['email']).all()
+                return render_template('tasksManage.html', title="任务管理 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                        tasksQuery=tasksQuery, accountQuery=accountQuery)
 
     """
         任务日志页面
     """
     @flaskConfig.app.route('/taskLogs')
     def taskLogs():
-        logs = mogudingLogs.query.filter_by(owner=session['email']).all()
-        return render_template('taskLogs.html', title="任务日志 - {}".format(flaskConfig.websiteName), username=session['username'],
-                                logs=logs)
+        if session.get('email') == None:
+            return redirect('/login')
+        else:
+            logs = mogudingLogs.query.filter_by(owner=session['email']).all()
+            return render_template('taskLogs.html', title="任务日志 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                    logs=logs)
     
     """
         推送管理页面
@@ -447,10 +459,13 @@ class viewFunctions:
             return render_template('sendManage.html', title="推送管理 - {}".format(flaskConfig.websiteName), username=session['username'],
                                 accountQuery=accountQuery, sendTaskQuery=sendTaskQuery)
         else:
-            accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
-            sendTaskQuery = mogudingTaskSend.query.filter_by(owner=session['email']).all()
-            return render_template('sendManage.html', title="推送管理 - {}".format(flaskConfig.websiteName), username=session['username'],
-                                accountQuery=accountQuery, sendTaskQuery=sendTaskQuery)
+            if session.get('email') == None:
+                return redirect('/login')
+            else:
+                accountQuery = mogudingAccount.query.filter_by(owner=session['email']).all()
+                sendTaskQuery = mogudingTaskSend.query.filter_by(owner=session['email']).all()
+                return render_template('sendManage.html', title="推送管理 - {}".format(flaskConfig.websiteName), username=session['username'],
+                                    accountQuery=accountQuery, sendTaskQuery=sendTaskQuery)
 
     """
         手动执行任务
@@ -470,7 +485,10 @@ class viewFunctions:
     """
     @flaskConfig.app.route('/donation')
     def donation():
-        return render_template('donation.html', title="捐赠! - {}".format(flaskConfig.websiteName)), 404
+        if session.get('email') == None:
+            return redirect('/login')
+        else:
+            return render_template('donation.html', title="捐赠! - {}".format(flaskConfig.websiteName)), 404
 
     """
         404
