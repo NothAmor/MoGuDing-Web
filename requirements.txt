@@ -1,6 +1,7 @@
 flask
 Flask-SQLAlchemy
 pymysql
-requests
+requests==2.24.0
 urllib3
 flask_apscheduler
+gevent

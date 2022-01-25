@@ -1,6 +1,11 @@
 from app.cron.cron import cronCheckMethod
 from config import flaskConfig
 from app.db.db import db
+
+from gevent.pywsgi import WSGIServer
+from gevent import monkey
+monkey.patch_all()
+
  
 if __name__ == '__main__':
     db.create_all()
@@ -9,4 +14,6 @@ if __name__ == '__main__':
     flaskConfig.scheduler.start()
 
     # 启动网站
-    flaskConfig.app.run(debug = flaskConfig.DEBUG, use_reloader=False)
+    #flaskConfig.app.run(debug = flaskConfig.DEBUG, use_reloader=False)
+    server = WSGIServer(('0.0.0.0', 5000), flaskConfig.app)
+    server.serve_forever()
